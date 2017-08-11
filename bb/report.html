@@ -1,0 +1,223 @@
+<!doctype HTML>
+<html>
+	<head>
+		<title>azu's BlackBox Report</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="./css/bootstrap.min.css" rel="stylesheet">
+		<link href="./css/logColor.css" rel="stylesheet">
+		<style>
+			body{
+				position: relative;
+			}
+
+			#meter{
+				position: fixed;
+				background-color: rgba(255,255,255,.6);
+				width: 50vw;
+				max-height: calc(100vh - 40px);
+				overflow: auto;
+				margin: 10px;	
+				padding: 10px;
+				right: 0px;
+				top: 0px;
+			}
+
+			#meter a{
+				display: none;
+			}
+
+			#meter table{
+				width: 100%;
+			}
+
+			#meter table th, #meter table td{
+				text-align: center !important;
+			}
+
+			#meter li{
+				display: none !important;
+			}
+
+			#meter li.active{
+				display: block !important;
+			}
+
+			.logBox{
+				background-color: rgba(0,0,0,.8);
+				min-height: 20px;
+			}
+
+			#selectBox{
+				position: fixed;
+				background-color: rgba(255,255,255,.6);
+				margin: 10px;	
+				padding: 10px;
+				right: 0px;
+				bottom: 0px;
+			}
+		</style>
+	</head>
+	<body class="container-fluid" data-spy="scroll" data-target="#meter">
+		<div id="meter">
+			<ul class="nav"></ul>
+		</div>
+		<div id="selectBox">
+			<label>
+				<input type="checkbox" value="type0" onclick="selectLog();" checked>
+				대화
+			</label>
+			<label>
+				<input type="checkbox" value="type1" onclick="selectLog();" checked>
+				전투
+			</label>
+			<label>
+				<input type="checkbox" value="type2" onclick="selectLog();">
+				이벤트
+			</label>
+		</div>
+		<script src="./js/jquery-1.12.4.min.js"></script>
+		<script src="./js/bootstrap.min.js"></script>
+		<script src="./js/logColor.js"></script>
+		<script>
+			function getType(type){
+				if(type<40)
+					return 0;
+				else if(type<50)
+					return 1;
+				else if(type<58)
+					return 0;
+				else if(type==58)
+					return 1;
+				else if(type<61)
+					return 0;
+				else if(type==61)
+					return 2;
+				else if(type<100)
+					return 0;
+				else if(type<185)
+					return 1;
+				else if(type==185)
+					return 0;
+				else if(type==186)
+					return 1;
+				return 0;
+			}
+
+			function selectLog(){
+				var checkbox = $("input[type=checkbox]");
+
+				for(var i=0;i<checkbox.length;i++){
+					if($(checkbox[i]).prop("checked"))
+						$("."+$(checkbox[i]).val()).show();
+					else
+						$("."+$(checkbox[i]).val()).hide();
+				}
+
+				if(window.meterType){
+					$("table.dps").hide();
+					$("table.hps").show();
+				}
+				else{
+					$("table.dps").show();
+					$("table.hps").hide();	
+				}
+			}
+
+			function printLog(){
+				while($(document).height()-$(window).height() <= $(window).scrollTop()){
+					if(window.meterI==window.meterMsg.length)
+						return;
+
+					for(var i=window.meterI;window.meterI<window.meterMsg.length&&window.meterI-i<100;window.meterI++){
+						if(window.meterMsg[window.meterI].type==-10){
+							window.meterCnt++;
+							
+							$("body").append('<div id="meter'+window.meterCnt+'" class="logBox"></div>');
+
+							$("#meter ul").append('<li><a href="#meter'+window.meterCnt+'"></a><table class="table dps"><caption><input type="button" value="DPS" class="btn btn-danger" onclick="window.meterType = true; selectLog();"> ['+window.meterMsg[window.meterI].data.header.duration+'] '+window.meterMsg[window.meterI].data.header.title+'('+window.meterMsg[window.meterI].data.header.encdps+') - '+window.meterMsg[window.meterI].data.header.CurrentZoneName+'</caption><thead><tr><th>Job</th><th>Name</th><th>DPS</th><th>Damage</th><th>D%</th><th>Crit%</th><th>Swing</th><th>Miss</th><th>Max Damage</th><th>Die</th></tr></thead><tbody></tbody></table><table class="table hps"><caption><input type="button" value="HPS" class="btn btn-success" onclick="window.meterType = false; selectLog();"> ['+window.meterMsg[window.meterI].data.header.duration+'] '+window.meterMsg[window.meterI].data.header.title+'('+window.meterMsg[window.meterI].data.header.encdps+') - '+window.meterMsg[window.meterI].data.header.CurrentZoneName+'</caption><thead><tr><th>Job</th><th>Name</th><th>HPS</th><th>Healed</th><th>H%</th><th>OvH%</th><th>Heal</th><th>Cure</th><th>Max Heal</th><th>Die</th></tr></thead><tbody></tbody></table></li>');
+
+							window.meterMsg[window.meterI].data.data = window.meterMsg[window.meterI].data.data.sort(function(cmp1,cmp2){
+								return parseFloat(cmp1.encdps)<parseFloat(cmp2.encdps);	
+							});
+
+							for(var j=0;j<window.meterMsg[window.meterI].data.data.length;j++){
+								$("#meter ul li:last-child table.dps tbody").append('<tr><td>'+window.meterMsg[window.meterI].data.data[j].Job+'</td><td>'+window.meterMsg[window.meterI].data.data[j].name+'</td><td>'+window.meterMsg[window.meterI].data.data[j].encdps+'</td><td>'+window.meterMsg[window.meterI].data.data[j].damage+'</td><td>'+window.meterMsg[window.meterI].data.data[j]["damage%"]+'</td><td>'+window.meterMsg[window.meterI].data.data[j]["crithit%"]+'</td><td>'+window.meterMsg[window.meterI].data.data[j].swings+'</td><td>'+window.meterMsg[window.meterI].data.data[j].misses+'</td><td>'+window.meterMsg[window.meterI].data.data[j].maxhit+'</td><td>'+window.meterMsg[window.meterI].data.data[j].deaths+'</td></tr>');
+							}
+
+							window.meterMsg[window.meterI].data.data = window.meterMsg[window.meterI].data.data.sort(function(cmp1,cmp2){
+								return parseFloat(cmp1.enchps)<parseFloat(cmp2.enchps);	
+							});
+
+							for(var j=0;j<window.meterMsg[window.meterI].data.data.length;j++){
+								$("#meter ul li:last-child table.hps tbody").append('<tr><td>'+window.meterMsg[window.meterI].data.data[j].Job+'</td><td>'+window.meterMsg[window.meterI].data.data[j].name+'</td><td>'+window.meterMsg[window.meterI].data.data[j].enchps+'</td><td>'+window.meterMsg[window.meterI].data.data[j].healed+'</td><td>'+window.meterMsg[window.meterI].data.data[j]["healed%"]+'</td><td>'+window.meterMsg[window.meterI].data.data[j].OverHealPct+'</td><td>'+window.meterMsg[window.meterI].data.data[j].heals+'</td><td>'+window.meterMsg[window.meterI].data.data[j].cures+'</td><td>'+window.meterMsg[window.meterI].data.data[j].maxheal+'</td><td>'+window.meterMsg[window.meterI].data.data[j].deaths+'</td></tr>');
+							}
+						}
+						else if(window.meterMsg[window.meterI].type==-20){
+							loadGist(window.meterMsg[window.meterI].data);
+							window.meterI++;
+							break;
+						}
+						else{
+							var timestamp = new Date(window.meterMsg[window.meterI].timestamp);
+							var prefix = '<span class="colorTime">['+(timestamp.getHours()<10?"0"+timestamp.getHours():timestamp.getHours())+":"+(timestamp.getMinutes()<10?"0"+timestamp.getMinutes():timestamp.getMinutes())+']</span>';
+
+							var decType = window.meterMsg[window.meterI].type&255;
+
+							if(decType==24)
+								prefix+="[자유부대]<"+window.meterMsg[window.meterI].nickname+"> ";
+							else if(decType>=16&&decType<=23)
+								prefix+="["+(decType-15)+"]<"+window.meterMsg[window.meterI].nickname+"> ";
+							else if(decType==10||decType==11||decType==68||decType==30||decType==61)
+								prefix+=window.meterMsg[window.meterI].nickname+": ";
+							else if(decType==14)
+								prefix+="("+window.meterMsg[window.meterI].nickname+") ";
+							else if(decType==28)
+								prefix+=window.meterMsg[window.meterI].nickname;
+							else if(decType==12)
+								prefix+=">>"+window.meterMsg[window.meterI].nickname+": ";
+							else if(decType==13)
+								prefix+=window.meterMsg[window.meterI].nickname+" >> ";
+							else if(decType==15)
+								prefix+="(("+window.meterMsg[window.meterI].nickname+")) ";
+							else if(decType==27)
+								prefix+="[초보자]<"+window.meterMsg[window.meterI].nickname+"> ";
+							
+
+							$("#meter"+meterCnt).append('<div class="type'+getType(decType)+' '+getColor(decType)+' code'+decType+'">'+prefix+$("<div></div>").text(window.meterMsg[window.meterI].data).html()+'</div>');
+						}
+					}
+
+					selectLog();
+				}
+			}
+
+			function loadGist(code){
+				$.ajax({
+					type: "GET",
+					url: "https://gist.githubusercontent.com/anonymous/"+code+"/raw/data.json",
+					dataType: "json",
+
+				}).done(function(msg){
+					msg.forEach(function(data){
+						window.meterMsg.push(data);
+					});
+					printLog();
+				}).fail(function(){
+					alert("데이터 불러오기 실패");
+				});
+			}
+
+			$(window).ready(function(){
+				window.meterMsg = [];
+				window.meterCnt = 0;
+				window.meterI = 0;
+
+				$("body").append('<div id="meter'+window.meterCnt+'" class="logBox"></div>');
+				$(window).scroll(printLog);
+
+				loadGist(location.hash.substr(1));
+			});
+		</script>
+	</body>
+</html>

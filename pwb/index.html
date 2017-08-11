@@ -1,0 +1,613 @@
+<!doctype HTML>
+<html>
+	<head>
+		<title>azu's PureWhite Box</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="./css/bootstrap.min.css" rel="stylesheet">
+		<link href="./css/bootstrap-slider.min.css" rel="stylesheet">
+		<link href="./css/logColor.css" rel="stylesheet">
+		<style>
+			body{
+				width: 100vw;
+				height: 100vh;
+				max-width: 100vw;
+				max-height: 100vh;
+				background-color: rgba(0,0,0,.6);
+				overflow: hidden;
+			}
+
+			#activate{
+				position: absolute;
+				top: 0px;
+				left: 0px;
+				z-index: 1;
+				width: 100%;
+				height: 100%;
+				background-color: rgba(0,0,0,.8);
+				color: rgb(255,255,255);
+				text-align: center;
+			}
+
+			#selectBox{
+				position: fixed;
+				background-color: rgba(255,255,255,.6);
+				margin: 10px;	
+				padding: 10px;
+				right: 0px;
+				bottom: 0px;
+			}
+
+			#logPreview{
+				overflow: auto;
+			}
+
+			.slider{
+				width: 100% !important;
+			}
+
+			.logList{
+				overflow-x: scroll;
+				overflow-y: hidden;
+				white-space: nowrap;
+			}
+
+			.logList button{
+				margin-left: 10px;
+				margin-right: 10px;
+			}
+		</style>
+	</head>
+	<body class="container-fluid">
+		<div id="activate">
+			<h1>* 경고 *</h1>
+			<h3>본 오버레이의 사용은 시스템에 예기치 못한 결과를 초래할 수 있습니다.</h3>
+			<input type="button" class="btn btn-danger" value="이를 이해했으며, 플러그인을 활성화 합니다." onclick="activePlugin();">
+			<hr>
+			아즈의 순백상자
+			<br>
+			<small>(파이널판타지14 블랙박스 플러그인)</small>
+		</div>
+		<div id="mainMenu" class="text-center">
+			<input type="button" class="btn btn-default" value="범위선택" onclick="showRange();">
+			<input type="button" class="btn btn-primary" value="필터" onclick="showFilter();">
+			<input type="button" class="btn btn-success" value="추출" onclick="showExtract();">
+			<input type="button" class="btn btn-warning" value="초기화" onclick="resetTimeline();">
+			<input type="button" class="btn btn-danger" value="비활성화" onclick="deactivePlugin();">
+		</div>
+		<div id="rangeMenu" class="text-center">
+			<input type="button" class="btn btn-primary" value="적용" onclick="setWorkline(); hideRange();">
+			<input type="button" class="btn btn-warning" value="초기화" onclick="window.pauseTimeline = false; clearPreview(); showRange();">
+			<input type="button" class="btn btn-danger" value="닫기" onclick="hideRange();">
+		</div>
+		<div id="extractMenu" class="text-center">
+			<input type="button" class="btn btn-primary" value="업로드" onclick="extractLog();">
+			<input type="button" class="btn btn-default" value="대기" onclick="copyUrl();"  disabled>
+			<input type="button" class="btn btn-danger" value="닫기" onclick="hideExtract();">
+		</div>
+		<div id="filterMenu" class="text-center">
+			<input type="button" class="btn btn-default" value="전체선택" onclick="$('#selectFilter input[type=checkbox]').prop('checked',true); selectLog();">
+			<input type="button" class="btn btn-default" value="전체해제" onclick="$('#selectFilter input[type=checkbox]').prop('checked',false); selectLog();">
+			<input type="button" class="btn btn-danger" value="닫기" onclick="hideFilter();">
+		</div>
+		<div id="selectRange" class="text-center">
+			<hr>
+			<div class="logList"></div>
+			<div class="container-fluid"><hr></div>
+			<div id="sliderLayer"></div>
+		</div>
+		<div id="selectFilter" class="text-center">
+			<hr>
+			<label class="colorSay">
+				<input type="checkbox" value="code10" onclick="selectLog();" checked>
+				말하기
+			</label>
+			<label class="colorShout">
+				<input type="checkbox" value="code11" onclick="selectLog();" checked>
+				외치기
+			</label>
+			<label class="colorWhisper">
+				<input type="checkbox" value="code12" onclick="selectLog();" checked>
+				보낸 귓속말
+			</label>
+			<label class="colorWhisper">
+				<input type="checkbox" value="code13" onclick="selectLog();" checked>
+				받은 귓속말
+			</label>
+			<label class="colorParty">
+				<input type="checkbox" value="code14" onclick="selectLog();" checked>
+				파티
+			</label>
+			<label class="colorAli">
+				<input type="checkbox" value="code15" onclick="selectLog();" checked>
+				연합파티
+			</label>
+			<label class="colorLS">
+				<input type="checkbox" value="code16" onclick="selectLog();" checked>
+				링크쉘1
+			</label>
+			<label class="colorLS">
+				<input type="checkbox" value="code17" onclick="selectLog();" checked>
+				링크쉘2
+			</label>
+			<label class="colorLS">
+				<input type="checkbox" value="code18" onclick="selectLog();" checked>
+				링크쉘3
+			</label>
+			<label class="colorLS">
+				<input type="checkbox" value="code19" onclick="selectLog();" checked>
+				링크쉘4
+			</label>
+			<label class="colorLS">
+				<input type="checkbox" value="code20" onclick="selectLog();" checked>
+				링크쉘5
+			</label>
+			<label class="colorLS">
+				<input type="checkbox" value="code21" onclick="selectLog();" checked>
+				링크쉘6
+			</label>
+			<label class="colorLS">
+				<input type="checkbox" value="code22" onclick="selectLog();" checked>
+				링크쉘7
+			</label>
+			<label class="colorLS">
+				<input type="checkbox" value="code23" onclick="selectLog();" checked>
+				링크쉘8
+			</label>
+			<label class="colorFC">
+				<input type="checkbox" value="code24" onclick="selectLog();" checked>
+				자유부대
+			</label>
+			<label class="colorLS">
+				<input type="checkbox" value="code27" onclick="selectLog();" checked>
+				초보자채널
+			</label>
+			<label class="colorYell">
+				<input type="checkbox" value="code30" onclick="selectLog();" checked>
+				떠들기
+			</label>
+			<label class="colorSys">
+				<input type="checkbox" value="code56" onclick="selectLog();" checked>
+				혼잣말
+			</label>
+		</div>
+		<hr>
+		<div id="logPreview"></div>
+		<div id="selectBox">
+			<label>
+				<input type="checkbox" value="type0" onclick="selectLog();" checked>
+				대화
+			</label>
+			<label>
+				<input type="checkbox" value="type1" onclick="selectLog();" checked>
+				전투
+			</label>
+			<label>
+				<input type="checkbox" value="type2" onclick="selectLog();">
+				이벤트
+			</label>
+		</div>
+		<script type="text/javascript" src="js/util.js"></script>
+		<script type="text/javascript" src="js/listen.js"></script>
+		<script src="./js/logColor.js"></script>
+		<script src="./js/jquery-1.12.4.min.js"></script>
+		<script src="./js/bootstrap.min.js"></script>
+		<script src="./js/bootstrap-slider.min.js"></script>
+		<script src="./js/moment.js"></script>
+		<script>
+			function activePlugin(){
+				localStorage.activate = "true";
+				$("#activate").hide();
+			}
+
+			function deactivePlugin(){
+				localStorage.activate = "false";
+				$("#activate").show();
+				resetTimeline();
+				location.reload();
+			}
+
+			function showRange(start,end){
+				if(window.timeline.length==0)
+					return;
+
+				$("#selectRange").show();
+				$("#rangeMenu").show();
+				$("#mainMenu").hide();
+
+				$("#sliderLayer").html('<input type="text" class="span2" value="" data-slider-min="'+window.timeline[0].timestamp+'" data-slider-max="'+window.timeline[window.timeline.length-1].timestamp+'" data-slider-step="1" data-slider-value="['+window.timeline[start?start:0].timestamp+','+timeline[end?end:window.timeline.length-1].timestamp+']">');
+				$("#sliderLayer input").slider({
+					formatter: function(value) {
+						return moment(new Date(value[0])).format("YYYY-MM-DD HH:mm:ss")+" ~ "+moment(new Date(value[1])).format("YYYY-MM-DD HH:mm:ss");
+					}
+				});
+
+				var lastIndex = 0;
+
+				$(".logList").html("");
+
+				for(var i=0;i<window.logline.length;i++){
+					if(window.logline[i].type==-10){
+						$(".logList").append('<button class="btn btn-default" onclick="showRange('+lastIndex+','+window.logline[i].index+')">'+window.logline[i].data+'<br>'+moment(new Date(window.logline[i].timestamp)).format("YYYY-MM-DD HH:mm:ss")+'</button>');
+
+						lastIndex = window.logline[i].index;
+					}
+					else if(window.logline[i].type==-20){
+						$(".logList").append('<button class="btn btn-default" onclick="showRange('+window.logline[i].index[0]+','+window.logline[i].index[1]+')">'+window.logline[i].data[0]+'<br>'+moment(new Date(window.logline[i].timestamp)).format("YYYY-MM-DD HH:mm:ss")+'<br>'+window.logline[i].data[1]+' ['+window.logline[i].data[2]+']</button>');
+
+						lastIndex = window.logline[i].index;
+					}
+				}
+
+				setHeight();
+			}
+
+			function hideRange(){
+				$("#selectRange").hide();
+				$("#rangeMenu").hide();
+				$("#mainMenu").show();
+
+				setHeight();
+			}
+
+			function showExtract(){
+				$("#extractMenu").show();
+				$("#mainMenu").hide();
+
+				$("#extractMenu input.btn-default").prop("disabled",true);
+				$("#extractMenu input.btn-default").val("대기");
+
+				setHeight();
+			}
+
+			function hideExtract(){
+				$("#extractMenu").hide();
+				$("#mainMenu").show();
+
+				setHeight();
+			}
+
+			function showFilter(){
+				$("#filterMenu").show();
+				$("#selectFilter").show();
+				$("#mainMenu").hide();
+
+				setHeight();
+			}
+
+			function hideFilter(){
+				$("#filterMenu").hide();
+				$("#selectFilter").hide();
+				$("#mainMenu").show();
+
+				setHeight();
+			}
+
+			function extractLog(){
+				if(window.workline.length==0)
+					window.workline = window.timeline.splice();
+
+				$("#extractMenu input").prop("disabled",true);
+				$("#extractMenu input.btn-default").val("진행");
+
+				saveTimeline(0,window.workline.length);
+			}
+
+			function setWorkline(){
+				window.pauseTimeline = true;
+				window.workline = [];
+
+				clearPreview();
+
+				var range = $("#sliderLayer input").slider("getValue");
+
+				for(var i=0;i<window.timeline.length;i++){
+					if(window.timeline[i].timestamp<range[0])
+						continue;
+					else if(window.timeline[i].timestamp>range[1])
+						break;
+
+					window.workline.push(window.timeline[i]);
+				}
+
+				window.meterI = 0;
+
+				printLog();
+			}
+
+			function selectLog(){
+				var checkbox = $("#selectBox input[type=checkbox]");
+
+				for(var i=0;i<checkbox.length;i++){
+					if($(checkbox[i]).prop("checked"))
+						$("."+$(checkbox[i]).val()).show();
+					else
+						$("."+$(checkbox[i]).val()).hide();
+
+					if($(checkbox[i]).val()=="type0"&&$(checkbox[i]).prop("checked")){
+						var checkbox2 = $("#selectFilter input[type=checkbox]");
+
+						for(var j=0;j<checkbox2.length;j++){
+							if($(checkbox2[j]).prop("checked"))
+								$("."+$(checkbox2[j]).val()).show();
+							else
+								$("."+$(checkbox2[j]).val()).hide();
+						}
+					}
+				}
+			}
+
+			function setHeight(){
+				$("#logPreview").height($(window).height()-$("#logPreview").offset().top);
+			}
+
+			function saveTimeline(start,end,next){
+				var output = [];
+
+				for(var i=(start>=end-4000?start:end-4000);i<end;i++){
+					var filter = $("input[value=code"+window.workline[i].type+"]");
+
+					if(filter.length!=0&&!filter.prop("checked"))
+						continue;
+
+					output.push(window.workline[i]);
+				}
+
+				if(next){
+					output.push({
+						timestamp: new Date().getTime(),
+						type: -20,
+						nickname: "",
+						data: next
+					});
+				}
+
+				$.ajax({
+					type: "POST",
+					url: "https://api.github.com/gists",
+					data: JSON.stringify({
+						"description": "azu Pure White Box's Blackbox Data",
+						"public": true,
+						"files": {
+							"data.json": {
+								"content": JSON.stringify(output)
+							}
+						}
+					}),
+					dataType: "json",
+
+				}).done(function(msg){
+					if(start>=end-4000){
+						$("#extractMenu input.btn").prop("disabled",false);
+						$("#extractMenu input.btn-default").data("url","http://cdn.kano.kr/pw/report.html#"+msg.id);
+						$("#extractMenu input.btn-default").val("복사");
+					}
+					else{
+						saveTimeline(start,end-4000,msg.id);
+					}
+				}).fail(function(){
+					$("#extractMenu input.btn").prop("disabled",false);
+					$("#extractMenu input.btn-default").prop("disabled",true);
+					$("#extractMenu input.btn-default").val("실패");
+				});
+			}
+
+			function copyUrl(){
+				$("#extractMenu").append('<input type="text" value="'+$("#extractMenu input.btn-default").data("url")+'">');
+				$("#extractMenu input[type=text]").select();
+				document.execCommand("copy");
+				$("#extractMenu input[type=text]").remove();
+			}
+
+			function noScroll(){
+				while($("#logPreview").prop("scrollHeight")>$("#logPreview").height()){
+					$("#logPreview").find("div:first-child").remove();
+				}
+			}
+
+			function clearPreview(){
+				$("#logPreview").html("");
+			}
+
+			function printData(data){
+				var timestamp = new Date(data.timestamp);
+				var prefix = '<span class="colorTime">['+(timestamp.getHours()<10?"0"+timestamp.getHours():timestamp.getHours())+":"+(timestamp.getMinutes()<10?"0"+timestamp.getMinutes():timestamp.getMinutes())+']</span>';
+
+				var decType = data.type&255;
+
+				if(decType==24)
+					prefix+="[자유부대]<"+data.nickname+"> ";
+				else if(decType>=16&&decType<=23)
+					prefix+="["+(decType-15)+"]<"+data.nickname+"> ";
+				else if(decType==10||decType==11||decType==68||decType==30||decType==61)
+					prefix+=data.nickname+": ";
+				else if(decType==14)
+					prefix+="("+data.nickname+") ";
+				else if(decType==28)
+					prefix+=data.nickname;
+				else if(decType==12)
+					prefix+=">>"+data.nickname+": ";
+				else if(decType==13)
+					prefix+=data.nickname+" >> ";
+				else if(decType==15)
+					prefix+="(("+data.nickname+")) ";
+				else if(decType==27)
+					prefix+="[초보자]<"+data.nickname+"> ";
+				
+
+				$("#logPreview").append('<div class="type'+getType(decType)+' '+getColor(decType)+' code'+decType+'">'+prefix+$("<div></div>").text(data.data).html()+'</div>');
+
+				selectLog();
+			}
+
+			function printLog(){
+				while($("#logPreview").prop("scrollHeight")-$("#logPreview").height()<=$("#logPreview").scrollTop()){
+					if(window.meterI==window.workline.length)
+						return;
+
+					for(var i=window.meterI;window.meterI<window.workline.length&&window.meterI-i<50;window.meterI++){
+						if(window.workline[window.meterI].type>=0)
+							printData(window.workline[window.meterI]);
+					}
+				}
+			}
+
+			function resetTimeline(){
+				window.timeline = [];
+				window.workline = [];
+				window.logline = [];
+				window.isActive = false;
+				window.pauseTimeline = false;
+				window.lastZone = "Unknown";
+
+				clearPreview();
+			}
+
+			function escapeLog(text){
+				var startList = ["\u001c","\u0002","�","\u0003"];
+
+				while(true){
+					var start = startList.map(function(start){
+						return text.indexOf(start);
+					}).sort(function(cmp1,cmp2){
+						if(cmp1==-1)
+							return 1;
+						else if(cmp2==-1)
+							return -1;
+						return cmp1>cmp2;
+					})[0];
+
+					if(start==-1)
+						break;
+
+					var target = text.substring(start,text.indexOf("\u0003")+"\u0003".length);
+					text = text.replace(target,"");
+				}
+
+				text = text.replace(/[\u0001-\u001f]/g,"");
+				text = text.replace(/[\ue000-\uf8ff]/g,"");
+
+				return text;
+			}
+
+			document.addEventListener("onOverlayDataUpdate",function(data){
+				if(!localStorage.activate)
+					return;
+				if(!data.detail)
+					return;
+
+				if(!window.meter)
+					window.meter = new window.Data(data.detail);
+				else
+					window.meter.update(data.detail);
+
+				var newData = [];
+
+				for(var i=0;i<window.meter.data.length;i++){
+					newData.push({
+						Job: window.meter.data[i].Job,
+						name: window.meter.data[i].name,
+						encdps: window.meter.data[i].encdps,
+						damage: window.meter.data[i].damage,
+						"damage%": window.meter.data[i]["damage%"],
+						"crithit%": window.meter.data[i]["crithit%"],
+						swings: window.meter.data[i].swings,
+						misses: window.meter.data[i].misses,
+						maxhit: window.meter.data[i].maxhit,
+						deaths: window.meter.data[i].deaths,
+						enchps: window.meter.data[i].enchps,
+						healed: window.meter.data[i].healed,
+						"healed%": window.meter.data[i]["healed%"],
+						OverHealPct: window.meter.data[i].OverHealPct,
+						heals: window.meter.data[i].heals,
+						cures: window.meter.data[i].cures,
+						maxheal: window.meter.data[i].maxheal
+					});
+				}
+
+				window.timeline.push({
+					timestamp: new Date().getTime(),
+					type: -10,
+					nickname: "",
+					data: {
+						header: {
+							duration: window.meter.header.duration,
+							title: window.meter.header.title,
+							encdps: window.meter.header.encdps,
+							CurrentZoneName: window.meter.header.CurrentZoneName,
+						},
+						data: newData
+					}
+				});
+
+				if(window.isActive!=window.meter.isActive){
+					if(window.isActive=="true"){
+						window.logline.push({
+							timestamp: new Date().getTime(),
+							type: -20,
+							index: [window.activeIndex,window.timeline.length-1],
+							data: [window.meter.header.CurrentZoneName,window.meter.header.title,window.meter.header.duration]
+						});
+					}
+					else
+						window.activeIndex = window.timeline.length-1;
+
+					window.isActive = window.meter.isActive;
+				}
+			});
+
+			document.addEventListener("onAllLine",function(data){
+				if(!localStorage.activate)
+					return;
+				if(!data.detail.message)
+					return;
+
+				data = data.detail.message.split("|");
+
+				if(parseInt(data[0])==0){
+					window.timeline.push({
+						timestamp: new Date(data[1]).getTime(),
+						type: parseInt(data[2],16),
+						nickname: escapeLog(data[3]),
+						data: escapeLog(data[4])
+					});
+
+					if(!window.pauseTimeline){
+						printData(window.timeline[window.timeline.length-1]);
+						noScroll();
+					}
+				}
+				if(parseInt(data[0])==1){
+					window.logline.push({
+						timestamp: new Date(data[1]).getTime(),
+						type: -10,
+						index: window.timeline.length-1,
+						data: window.lastZone
+					});
+
+					window.lastZone = data[3];
+				}
+			});
+
+			$(window).load(function(){
+				if(localStorage.activate==="true")
+					$("#activate").hide();
+
+				$("#rangeMenu").hide();
+				$("#selectRange").hide();
+				$("#extractMenu").hide();
+				$("#filterMenu").hide();
+				$("#selectFilter").hide();
+
+				resetTimeline();
+				setHeight();
+
+				$("#logPreview").scroll(printLog);
+
+				$("#logPreview").html('<div class="colorSys">아즈의 순백상자 <small>(20170811)</small></div><div class="container text-center"><img src="./img/header.png" class="img-responsive"></div>');
+
+				$(window).resize(setHeight);
+			});
+		</script>
+	</body>
+</html>

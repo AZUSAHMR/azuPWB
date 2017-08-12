@@ -556,7 +556,7 @@
 				}
 			});
 
-			document.addEventListener("onAllLine",function(data){
+			document.addEventListener("onLogLine",function(data){
 				if(!localStorage.activate)
 					return;
 				if(!data.detail.message)
@@ -604,7 +604,7 @@
 
 				$("#logPreview").scroll(printLog);
 
-				$("#logPreview").html('<div class="colorSys">아즈의 순백상자 <small>(20170811)</small></div><div class="container text-center"><img src="./img/header.png" class="img-responsive"></div>');
+				$("#logPreview").html('<div class="colorSys">아즈의 순백상자 <small>(20170813)</small></div><div class="container text-center"><img src="./img/header.png" class="img-responsive"></div>');
 
 				$(window).resize(setHeight);
 			});

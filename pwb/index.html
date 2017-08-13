@@ -559,13 +559,15 @@
 			document.addEventListener("onLogLine",function(data){
 				if(!localStorage.activate)
 					return;
+				if(!data.detail)
+					return;
 				
-				if(data.opcode==0){
+				if(data.detail.opcode==0){
 					window.timeline.push({
-						timestamp: new Date(data.timestamp).getTime(),
-						type: parseInt(data.payload[0],16),
-						nickname: escapeLog(data.payload[1]),
-						data: escapeLog(data.payload[2])
+						timestamp: new Date(data.detail.timestamp).getTime(),
+						type: parseInt(data.detail.payload[0],16),
+						nickname: escapeLog(data.detail.payload[1]),
+						data: escapeLog(data.detail.payload[2])
 					});
 
 					if(!window.pauseTimeline){
@@ -575,13 +577,13 @@
 				}
 				if(data.opcode==1){
 					window.logline.push({
-						timestamp: new Date(data.timestamp).getTime(),
+						timestamp: new Date(data.detail.timestamp).getTime(),
 						type: -10,
 						index: window.timeline.length-1,
 						data: window.lastZone
 					});
 
-					window.lastZone = data.payload[1];
+					window.lastZone = data.detail.payload[1];
 				}
 			});
 
@@ -600,7 +602,7 @@
 
 				$("#logPreview").scroll(printLog);
 
-				$("#logPreview").html('<div class="colorSys">아즈의 순백상자 <small>(20170813)</small></div><div class="container text-center"><img src="./img/header.png" class="img-responsive"></div>');
+				$("#logPreview").html('<div class="colorSys">아즈의 순백상자 <small>(20170814)</small></div><div class="container text-center"><img src="./img/header.png" class="img-responsive"></div>');
 
 				$(window).resize(setHeight);
 			});

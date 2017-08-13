@@ -559,17 +559,13 @@
 			document.addEventListener("onLogLine",function(data){
 				if(!localStorage.activate)
 					return;
-				if(!data.detail.message)
-					return;
-
-				data = data.detail.message.split("|");
-
-				if(parseInt(data[0])==0){
+				
+				if(data.opcode==0){
 					window.timeline.push({
-						timestamp: new Date(data[1]).getTime(),
-						type: parseInt(data[2],16),
-						nickname: escapeLog(data[3]),
-						data: escapeLog(data[4])
+						timestamp: new Date(data.timestamp).getTime(),
+						type: parseInt(data.payload[0],16),
+						nickname: escapeLog(data.payload[1]),
+						data: escapeLog(data.payload[2])
 					});
 
 					if(!window.pauseTimeline){
@@ -577,15 +573,15 @@
 						noScroll();
 					}
 				}
-				if(parseInt(data[0])==1){
+				if(data.opcode==1){
 					window.logline.push({
-						timestamp: new Date(data[1]).getTime(),
+						timestamp: new Date(data.timestamp).getTime(),
 						type: -10,
 						index: window.timeline.length-1,
 						data: window.lastZone
 					});
 
-					window.lastZone = data[3];
+					window.lastZone = data.payload[1];
 				}
 			});
 

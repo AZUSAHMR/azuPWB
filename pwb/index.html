@@ -575,7 +575,7 @@
 						noScroll();
 					}
 				}
-				if(data.detail.opcode==1){
+				else if(data.detail.opcode==1){
 					window.logline.push({
 						timestamp: new Date(data.detail.timestamp).getTime(),
 						type: -10,
